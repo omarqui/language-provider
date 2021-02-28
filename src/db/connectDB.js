@@ -6,10 +6,10 @@ const {
     MONGO_DB
 } = process.env;
 
-const dbString = `mongodb+srv://${MONGO_USER}:${MONGO_PASS}@${MONGO_SERVER}/${MONGO_DB}?retryWrites=true&w=majority`;
+const getDBConnectionString = () => `mongodb+srv://${MONGO_USER}:${MONGO_PASS}@${MONGO_SERVER}/${MONGO_DB}?retryWrites=true&w=majority`;
 
 const connectDB = async () => {
-    await mongoose.connect(dbString, {
+    await mongoose.connect(getDBConnectionString(), {
         useNewUrlParser: true,
         useUnifiedTopology: true
     }).then(() => {
@@ -19,4 +19,7 @@ const connectDB = async () => {
     });
 }
 
-module.exports = connectDB;
+module.exports = {
+    getDBConnectionString,
+    connectDB
+};

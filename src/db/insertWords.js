@@ -1,26 +1,39 @@
 const WordModel = require('../models/Word');
 const AsyncFilter = require('../utils/asyncFilter');
 
-const insertWords = async (data, language) => {
-    console.log(new Date(), "Inicio validacion");
-    const newWords = await AsyncFilter(data,async word => {
+const getJustNewWords = async words =>
+    await AsyncFilter(words, async word => {
         const isWordSaved = await WordModel.exists({ _id: word });
         return !isWordSaved;
     });
-    
-    const wordsList = newWords.map(word => {
+
+
+const transformWordToDBWords = (words, language) =>
+    words.map(word => {
         return new WordModel({
             _id: word,
             languages: [language]
         });
     });
 
-    console.log(new Date(), "Inicio insert");
-    WordModel.insertMany(wordsList, (err, docs) => {
-        if (err) return console.error(err);
+const insertWords = async (data, language) => {
+    console.log(new Date(), "Looking for new words");
+    const newWords = await getJustNewWords(data);
 
-        console.log(new Date(),`${docs.length} words were successfully stored.`);
+    if (newWords.length == 0)
+        return console.log(new Date(), "Not new words to insert!");
+
+    const wordsToInsert = transformWordToDBWords(newWords, language);
+
+    console.log(new Date(), `Starting to insert ${wordsToInsert.length} new words`);
+    WordModel.insertMany(wordsToInsert, (err, docs) => {
+        if (err) return console.error(err);
+        console.log(new Date(), `${docs.length} words were successfully stored.`);
     });
 }
 
-module.exports = insertWords;
+module.exports = {
+    insertWords,
+    getJustNewWords,
+    transformWordToDBWords
+};
