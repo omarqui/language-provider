@@ -6,7 +6,7 @@ const Word = new mongoose.Schema({
         required: true
     },
     languages: {
-        type: Array,
+        type: [String],
         required: true
     }
 });
