@@ -1,12 +1,14 @@
 require('dotenv').config()
 const { connectDB } = require('./db/connectDB');
 const { insertWords } = require('./db/insertWords');
-const { ENGLISH } = require('./constants/languagesSupported');
-const data = require('../data/english/1k_words.json');
+const { ENGLISH, SPANISH, FRENCH } = require('./constants/languagesSupported');
+const dataEnglish = require('../data/english/20k_words_2.json');
+const dataSpanish = require('../data/spanish/1k_words.json');
+const dataFrance = require('../data/france/1k_words.json');
 
 const app = async () => {
     await connectDB();
-    insertWords(data, ENGLISH);
+    insertWords(dataEnglish, ENGLISH);
 }
 
 app();
